@@ -21,6 +21,10 @@ include:
   - project: 'libretro-infrastructure/ci-templates'
     file: '/linux-cmake.yml'
 
+  # MacOS ARM 64-bit
+  - project: 'libretro-infrastructure/ci-templates'
+    file: '/osx-cmake-arm64.yml'
+
   ################################## CELLULAR ##############################  ##
   # Android
   - project: 'libretro-infrastructure/ci-templates'
@@ -71,6 +75,14 @@ libretro-build-linux-aarch64:
   variables:
     CORE_ARGS: ${BASE_CORE_ARGS} -DCMAKE_C_COMPILER=gcc-12 -DCMAKE_CXX_COMPILER=g++-12
 
+# MacOS ARM 64-bit
+libretro-build-osx-arm64:
+  extends:
+    - .core-defs
+    - .libretro-osx-cmake-arm64
+  variables:
+    CORE_ARGS: ${BASE_CORE_ARGS} -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+
 ################################### CELLULAR #################################
 # Android ARMv8a
 android-arm64-v8a:
@@ -79,6 +91,22 @@ android-arm64-v8a:
     - .core-defs
   variables:
     ANDROID_NDK_VERSION: 29.0.14206865
+    NDK_ROOT: /android-sdk-linux/ndk/$ANDROID_NDK_VERSION
+
+# Android 64-bit x86
+#
+# Held to NDK 26 on purpose. This is the ABI that compiles dynarmic's x64
+# backend, and the mcl headers it pulls in do not survive the clang in NDK 29:
+# "implicit instantiation of undefined template
+# mcl::mp::detail::lift_sequence_impl". arm64-v8a never reaches that code,
+# which is why it is fine on 29. 26.2 is also a version the template leaves
+# alone - it rewrites a request for 27.3 into 29.
+android-x86_64:
+  extends:
+    - .libretro-android-cmake-x86_64
+    - .core-defs
+  variables:
+    ANDROID_NDK_VERSION: 26.2.11394342
     NDK_ROOT: /android-sdk-linux/ndk/$ANDROID_NDK_VERSION
 
 ################################### CONSOLES #################################

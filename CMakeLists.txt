@@ -41,8 +41,9 @@ if (APPLE)
         set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
         set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
     else()
-        # Minimum macOS 11
-        set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0")
+        # Minimum macOS 13.3: std::format's floating point path needs
+        # std::to_chars, which libc++ marks as available from there.
+        set(CMAKE_OSX_DEPLOYMENT_TARGET "13.3")
     endif()
 endif()
 
